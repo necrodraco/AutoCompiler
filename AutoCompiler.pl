@@ -9,7 +9,8 @@ use POSIX qw/strftime/;
 
 use Moo; 
 use Getopt::Long; 
-use Ressourcer; 
+
+use src::Ressourcer; 
 
 my $all = 0; 
 my $help = 0; 

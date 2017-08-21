@@ -2,8 +2,10 @@
 
 use strict; 
 use warnings; 
-	
+use feature 'say';
+
 use Data::Dumper; 
+use POSIX qw/strftime/;
 
 use Moo; 
 use Getopt::Long; 
@@ -27,14 +29,19 @@ EOF
 	exit(0);
 }
 
-my $ressourcer = Ressourcer->new("settings.properties");
+my $ressourcer = Ressourcer->new( ressource => "settings.properties");
+$ressourcer->readRessources();
 
-print 'start '.&getTime()."\n" if($test); 
+$test = 1 if($ressourcer->getTest());
 
-print 'end '.&getTime()."\n" if($test);
+&sayPrint('start') if($test); 
 
-sub  getTime(){
-	use POSIX qw/strftime/;
+&sayPrint('finished setting Ressources') if($test);
 
-	return strftime "%d-%m-%Y %H:%M:%S", localtime(time);
+&sayPrint('end') if($test);
+
+sub  sayPrint(){
+	my $string = shift;
+	my $time = strftime "%d-%m-%Y %H:%M:%S ", localtime(time);
+	say $time.$string; 
 }

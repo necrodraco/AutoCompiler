@@ -4,9 +4,10 @@ use strict;
 use warnings; 
 	
 package Ressourcer{
+	use Moo; 
 	use Data::Dumper; 
 
-	use Moo; 
+	#use Library; 
 	
 	has ressource => ( is => 'rw', required => 1, ); 
 	has pathSource => ( is => 'rw', );

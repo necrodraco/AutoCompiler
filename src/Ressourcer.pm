@@ -7,10 +7,10 @@ package Ressourcer{
 	use Moo; 
 	use Data::Dumper; 
 
-	#use Library; 
+	use Library; 
 	
 	has ressource => ( is => 'rw', required => 1, ); 
-	has pathSource => ( is => 'rw', );
+	has sourcePath => ( is => 'rw', );
 	has other => (is => 'rw');
 
 	sub readRessources(){
@@ -28,7 +28,7 @@ package Ressourcer{
 		close($file);
 
 		if(defined($values->{'pathToHome'}) && $values->{'pathToHome'} ne ''){
-			$self->pathSource($values->{'pathToHome'});
+			$self->sourcePath($values->{'pathToHome'});
 		}
 		$self->other($values);
 	}

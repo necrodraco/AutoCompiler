@@ -1,21 +1,16 @@
 #! /usr/bin/perl
 
-use strict; 
-use warnings; 
-
 package AutoCompiler{
-	#use feature 'say';
-
-	use Data::Dumper; 
-	use POSIX qw/strftime/;
-
-	use Moo; 
+	use Moose; 
 	use Getopt::Long; 
 
-	use src::Library; 
-	use src::Ressourcer; 
+	use lib 'src';
+	use Library; 
+	use Ressourcer; 
+	use GitManager; 
 
 	my $l = Library->new();
+	my $sourcPath = '';
 
 	my $all = 0; 
 	my $help = 0; 
@@ -28,19 +23,25 @@ package AutoCompiler{
 
 	if($help){
 		print <<EOF;
-	-all = Do all -> DEFAULT
-	-test = Parameter set to activate Output
-	-help = get these Help message
+-all = Do all -> DEFAULT
+-test = Parameter set to activate Output
+-help = get these Help message
 EOF
 		exit(0);
 	}
 
-	my $ressourcer = Ressourcer->new( ressource => "settings.properties");
+	my $ressourcer = Ressourcer->new( ressource => 'settings.properties');
 	$ressourcer->readRessources();
 
 	$test = 1 if($ressourcer->getTest());
-
 	$l->sayPrint('start') if($test); 
+
+	$l->sayPrint('Start Pulling newest Updates');
+
+	my $gitManager = GitManager->new( path => 'submodules' );
+	$gitManager->pull();
+
+	$l->sayPrint('Pulling newest Updates finished');
 
 	$l->sayPrint('finished setting Ressources') if($test);
 

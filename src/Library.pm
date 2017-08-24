@@ -1,10 +1,7 @@
 #! /usr/bin/perl
 
-use strict; 
-
 package Library{
-	use Moo; 
-	use warnings; 
+	use Moose; 
 	use feature 'say';
 	use Data::Dumper; 
 	use POSIX qw/strftime/;

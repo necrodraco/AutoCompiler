@@ -1,2 +1,6 @@
 settings.properties
 ygopro*
+img/*
+imgOld
+submodules/*
+pics/*.jpg

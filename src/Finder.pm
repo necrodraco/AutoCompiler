@@ -7,7 +7,8 @@ package Finder{
 
 	use File::Find; 
 
-	has path => (is => 'ro');
+	has 'path' => ('is' => 'ro');
+	
 	my @repos = ();
 	my %images = ();
 

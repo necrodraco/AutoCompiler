@@ -14,7 +14,7 @@ package Library{
 
 	sub doCommand(){
 		my ($self, $command, $flag) = @_; 
-		if(defined($command) && $command ne ""){
+		if(defined($command) && $command ne ''){
 			if($flag){
 				$self->sayPrint('command: '.(Dumper $command)); 
 			}

@@ -1,6 +1,11 @@
 settings.properties
 ygopro*
 img/*
-imgOld
+imgOld/*
+imgMain/*
+
 submodules/*
-pics/*.jpg
+pics/*
+*.obb
+*.zip
+pics_normal*

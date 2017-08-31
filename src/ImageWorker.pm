@@ -8,29 +8,37 @@ package ImageWorker{
 	use Finder; 
 
 	use Image::Magick; 
+	use Archive::Zip;
+	use Archive::Zip qw(:ERROR_CODES); 
 
-	has path => (is => 'rw', required => 1);
-	has pathToGit => (is => 'rw', required => 1, ); 
-	has pathToSrc => (is => 'rw', required => 1, ); 
-	has images => (is => 'rw', );
+	has 'path' => ('is' => 'rw', 'required' => 1);
+	has 'pathToGit' => ('is' => 'rw', 'required' => 1, ); 
+	has 'pathToSrc' => ('is' => 'rw', 'required' => 1, ); 
+	has 'pathToMain' => ('is' => 'rw', 'required' => 1, );
+	has 'images' => ('is' => 'rw', );
+	has 'res' => ('is' => 'rw', );
 
 	sub readImages(){
 		my ($self) = @_;
 		
-		my $finder = Finder->new(path => $self->pathToGit, );
+		my $finder = Finder->new('path' => $self->pathToGit(), );
 		my $list = $finder->findPics();
 		
-		$finder = Finder->new(path => $self->pathToSrc, );
-		my $list2 = $finder->findPics();
+		$finder = Finder->new('path' => $self->pathToSrc(), );
+		$finder->findPics();
 		
-		$list = $self->overwriteDual($list, $list2);
+		$finder = Finder->new('path' => $self->pathToMain(), );
+		$finder->findPics();
+		$list = $self->remove($list, $self->pathToMain());
 		$self->images($list); 
 	}
 
-	sub overwriteDual(){
-		my ($self, $lg, $l) = @_; 
-		foreach my $x( keys %{$l}){
-			$lg->{$x} = $l->{$x};
+	sub remove(){
+		my ($self, $lg, $remove) = @_; 
+		foreach my $x( keys %{$lg}){
+			if($lg->{$x} =~ m/$remove/){
+				delete $lg->{$x};
+			}
 		}
 		return $lg; 
 	}
@@ -40,79 +48,43 @@ package ImageWorker{
 		while(my ($name, $src) = each %{$self->images()}){
 			my $dest = $self->path().'/'.$name.'.jpg';
 			my $image = new Image::Magick; 
-			$self->sayPrint('src ist : '.$src);
-			$self->sayPrint('Dest ist: '.$dest);
 			$image->Read($src);
-			$image->Set(quality=>'90');
+			$image->Set('quality'=>'90');
 			$image->Strip();
 			$image->Write($dest);
 			$image = undef; 
 		}
 	}
+
+	sub archiveImages(){
+		my ($self, $archiveName, $args, $split) = @_;
+		my $archive = Archive::Zip->new(); 
+		while(my ($opt, $name) = each %{$args}){
+			if(defined($opt) && $opt =~ m/folder/){
+				$archive->addTree($name.'/', $name);
+			}elsif(defined($opt) && $opt =~ m/file/){
+				$archive->addFile($name) or die $self->sayPrint('Error during Add File');
+			}
+		}
+		$archive->writeToFileNamed($archiveName) == AZ_OK or die 'Error during writing to Archive '; 
+
+		if($split){
+			$self->doCommand('split -b 50m "'.$archiveName.'" "'.$archiveName.'.part-"');
+		}
+		
+	}
+
+	sub archiving(){
+		my ($self) = @_;
+		my $args = {
+			'folder1' => 'pics', 
+		};
+		$self->archiveImages($self->res()->{'patchObb'}, $args);
+
+		$args = {
+			'file1' => $self->res()->{'patchObb'}, 
+		};
+		$self->archiveImages($self->res()->{'zipArchive'}, $args, 1);
+	}
 }
 1; 
-<<eof;
-use Archive::Zip;
-use Archive::Zip qw(:ERROR_CODES); 
-
-has library => (is => 'rw', required => 1);
-
-sub doPic(_){
-	my (_self, _ref) = __; 
-	my _imageS = _imageList; 
-	foreach my _file (_imageList){
-		my _items = split(/pics/, _file);
-		my _src = _items[0]."pics"._items[1]; 
-		my _dest = _self->library->resources()->{imageFolder};
-	}
-}
-
-sub saveInArchive(_){
-	my (_self, _ref) = __; 
-	my _reference = @{_ref};
-	my _archiveName = shift _reference; 
-	my _items = shift _reference; 
-	my _split = shift _reference || 0;#The Archive should be splitted if 1
-	
-	my _archive = Archive::Zip->new();
-	foreach my _key(keys __items){
-		if(_key =~ /folder/){
-			_archive->addTree(_items->{_key}."/", _items->{_key});
-		}else{
-			_archive->addFile(_items->{_key}) or die "Error during Add File";
-		}
-	}
-	_archive->writeToFileNamed(_archiveName) == AZ_OK or die "Error during writing to Archive ";
-	if(_split == 1){
-		_self->library->doCommand('split -b 50m "'._archiveName.'" "'._archiveName.'.part-"');
-	}
-}
-
-sub doImages(){
-	_self->doPic();
-
-	##Do Archiving Part 1
-	my _pathImage = ("folder1"=>"pics");
-	my _args = (
-		_self->library->resources()->{nameOfPatchOBB}, 
-		\_pathImage
-		);
-	_self->saveInArchive(\_args);
-	
-	print "Archiving Pics to patch.obb finished\n";
-
-	##DO Archiving Part 2
-	my _pathArchiveFolderOnly = (
-		"folder1" => "ai", 
-		"file1" => _self->library->resources()->{nameOfPatchOBB},
-		);
-	_args = (
-		_self->library->resources()->{nameOfZipFile}, 
-		\_pathArchiveFolderOnly, 
-		1
-		);
-	_self->saveInArchive(\_args);
-
-	print "Archiving All Files to "._self->library->resources()->{nameOfZipFile}." finished\n";
-}
-eof

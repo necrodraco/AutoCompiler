@@ -5,21 +5,20 @@ use warnings;
 	
 package Ressourcer{
 	use Moo; 
-	use Data::Dumper; 
-
+	
 	use Library; 
 	
-	has ressource => ( is => 'rw', required => 1, ); 
-	has sourcePath => ( is => 'rw', );
-	has other => (is => 'rw');
+	has 'ressource' => ( 'is' => 'rw', 'required' => 1, ); 
+	has 'sourcePath' => ( 'is' => 'rw', );
+	has 'other' => ('is' => 'rw', );
 
 	sub readRessources(){
 		my $self = shift; 
 
-		open(my $file, "<", $self->ressource()) or die "can't open ".$self->filename();
+		open(my $file, '<', $self->ressource()) or die 'cant open '.$self->filename();
 		my $values = ();
 		while (my $row = <$file>) {
-				if(!($row =~ "#")){
+				if(!($row =~ m/#/)){
 					my @items = split(/=/,$row);
 					$items[1] =~ s/\n//g;
 					$values->{$items[0]} = $items[1]; 

@@ -8,13 +8,13 @@ package GitManager{
 	
 	use Finder; 
 
-	has path => (is => 'rw', required => 1, );
-	has changed => (is => 'rw', default => 0);
+	has 'path' => ('is' => 'rw', 'required' => 1, );
+	has 'changed' => ('is' => 'rw', 'default' => 1);
+	
 	sub pull(){
 		my ($self, $test) = @_; 
 		my $finder = Finder->new(path => $self->path, );
 		my @list = @{$finder->findRepos()}; 
-		use Data::Dumper; 
 		foreach my $argument(@list){
 			#my $repo = Git::Repository->new(git_dir => $ENV{HOME}.'/AutoCompiler/'.$argument);
 			#my $status = 

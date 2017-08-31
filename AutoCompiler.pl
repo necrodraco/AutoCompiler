@@ -45,29 +45,37 @@ EOF
 
 	$l->sayPrint('finished setting Ressources') if($test);
 
-	$l->sayPrint('Start Pulling newest Updates');
+	my $status = 0;#
+	if($all || $pull){
+		$l->sayPrint('Start Pulling newest Updates');
 
-	my $gitManager = GitManager->new( 'path' => 'submodules' );
-	my $status = 1;#$gitManager->pull();
-
-	$l->sayPrint('Pulling newest Updates finished');
+		my $gitManager = GitManager->new( 'path' => 'submodules' );
+		$status = $gitManager->pull();
+		$l->sayPrint('Pulling newest Updates finished');
+	}
+	$status = 1 if($images);
 	
 	if($status){
 		$l->sayPrint('Updates where found');
-		my $imageWorker = ImageWorker->new(
-			'path' => $ressourcer->sourcePath().'/AutoCompiler/pics', 
-			'pathToGit' => $ressourcer->sourcePath().'/AutoCompiler/submodules/Live-images/pics', 
-			'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
-			'pathToMain' => $ressourcer->other()->{'picsMain'}, 
-			'res' => $ressourcer->other(), 
-		);
-		$l->sayPrint('Images will be prepared to create Image File');
-		$imageWorker->readImages(); 
-		$imageWorker->prepareImages();
-		$l->sayPrint('Image Preparing finished');
-		$l->sayPrint('Start creating of Image Archive File');
-		$imageWorker->archiving();
-		$l->sayPrint('Creating of Image Archive Finished');
+		if($all || $images){
+			my $imageWorker = ImageWorker->new(
+				'path' => $ressourcer->sourcePath().'/AutoCompiler/pics', 
+				'pathToGit' => $ressourcer->sourcePath().'/AutoCompiler/submodules/Live-images/pics', 
+				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
+				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
+				'res' => $ressourcer->other(), 
+			);
+			$l->sayPrint('Images will be prepared to create Image File');
+			$imageWorker->readImages(); 
+			$imageWorker->prepareImages();
+			$l->sayPrint('Image Preparing finished');
+			$l->sayPrint('Start creating of Image Archive File');
+			$imageWorker->archiving();
+			$l->sayPrint('Creating of Image Archive Finished');
+		}
+		if($all){
+
+		}
 	}else{
 		$l->sayPrint('No new Updates');
 	}

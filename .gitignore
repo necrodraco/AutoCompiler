@@ -3,9 +3,10 @@ ygopro*
 img/*
 imgOld/*
 imgMain/*
-
+*.apk
 submodules/*
 pics/*
 *.obb
 *.zip
 pics_normal*
+ygopro/*

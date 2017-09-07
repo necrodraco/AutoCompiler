@@ -9,14 +9,23 @@ package Finder{
 
 	has 'path' => ('is' => 'ro');
 	
-	my @repos = ();
-	my %images = ();
+	my @repos;
+	my $images;
+	my $scripts;
 
 	sub findAllNeededRepos(){
 		my $repo = $File::Find::name; 
 		if($repo =~ m/.git/ && !($repo =~ m/.gitignore/)){
 			$repo =~ s/\/.git//g; 
 			push (@repos, $repo); 
+		}
+	}
+
+	sub findScriptFolders(){
+		my $script = $File::Find::name; 
+		if($script =~ m/.lua/){
+			my $script2 = (split('script/', $script))[1]; 
+			$scripts->{$script2} = $script; 
 		}
 	}
 
@@ -31,7 +40,7 @@ package Finder{
 			}
 			$image2 =~ s/.png//g; 
 			$image2 =~ s/.jpg//g; 
-			$images{$image2} = $image; 
+			$images->{$image2} = $image; 
 		}
 	}
 	sub findRepos(){
@@ -43,7 +52,13 @@ package Finder{
 	sub findPics(){
 		my ($self, $arg) = @_;
 		find({ wanted => \&findImages, no_chdir=>1}, $self->path());
-		return \%images;
+		return $images;
+	}
+
+	sub findScripts(){
+		my ($self) = @_;
+		find({ wanted => \&findScriptFolders, no_chdir=>1}, $self->path());
+		return $scripts; 
 	}
 }
 1; 

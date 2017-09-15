@@ -9,17 +9,17 @@ package AutoCompiler{
 	use Ressourcer; 
 	use GitManager; 
 	use ImageWorker;
-	use SqlManager;  
 	use Scripter;
+	use Generator; 
 
 	my $l = Library->new();
-	my $sourcPath = '';
-
+	
 	my $all = 0; 
 	my $pull = 0; 
 	my $images = 0; 
 	my $scripts = 0; 
-	my $sql = 0; 
+	my $normal = 0; 
+	my $anime = 0; 
 	my $help = 0; 
 	my $test = 0; 
 	GetOptions (
@@ -27,7 +27,8 @@ package AutoCompiler{
 			'pull' => \$pull, 
 			'images' => \$images, 
 			'script' => \$scripts, 
-			'sql' => \$sql, 
+			'normal' => \$normal,
+			'anime' => \$anime,  
 			'test' => \$test, 
 			'help' => \$help, 
 		);
@@ -38,7 +39,8 @@ package AutoCompiler{
 -pull 		= actualize all Sources
 -image 		= Prepare and Archive Images
 -script 	= Actualize the Scripts
--sql 		= Create the Cards.cdb
+-normal 	= Build Normal APK
+-anime 		= Build Anime APK
 -test 		= Parameter set to activate Output
 -help 		= get these Help message
 EOF
@@ -48,6 +50,7 @@ EOF
 	my $ressourcer = Ressourcer->new( ressource => 'settings.properties');
 	$ressourcer->readRessources();
 
+	my $sourcePath = $ressourcer->sourcePath();
 	$test = 1 if($ressourcer->getTest());
 	$l->sayPrint('start') if($test); 
 
@@ -61,14 +64,14 @@ EOF
 		$status = $gitManager->pull();
 		$l->sayPrint('Pulling newest Updates finished');
 	}
-	$status = 1 if($images || $scripts || $sql);
+	$status = 1 if($images || $scripts || $normal || $anime);
 	
 	if($status){
 		$l->sayPrint('Updates where found');
 		if($all || $images){
 			my $imageWorker = ImageWorker->new(
-				'path' => $ressourcer->sourcePath().'AutoCompiler/pics', 
-				'pathToGit' => $ressourcer->sourcePath().'AutoCompiler/submodules/Live-images/pics', 
+				'path' => $sourcePath.'AutoCompiler/pics', 
+				'pathToGit' => $sourcePath.'AutoCompiler/submodules/Live-images/pics', 
 				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
 				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
 				'res' => $ressourcer->other(), 
@@ -81,34 +84,61 @@ EOF
 			$imageWorker->archiving();
 			$l->sayPrint('Creating of Image Archive Finished');
 		}
+
 		if($all || $scripts){
 			$l->sayPrint('Scripter started');
 			my $scripter = Scripter->new(
-				'src' => $ressourcer->sourcePath().'AutoCompiler/submodules', 
-				'dest' => $ressourcer->sourcePath().$ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
+				'src' => $sourcePath.'AutoCompiler/submodules', 
+				'dest' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
 			);
 			$scripter->updateScripts(
-					$ressourcer->sourcePath().$ressourcer->other()->{'pathToOldApkFolder'}.'/assets/script'
+					$sourcePath.$ressourcer->other()->{'pathToOldApkFolder'}.'/assets/script'
 					#Add Manually Folders
 					);
 			$l->sayPrint('Scripter Finished');
 		}
-		if($all || $sql){
-			$l->sayPrint('Do Sql Action');
-			my $sqlManager = SqlManager->new(
-					'path' => $ressourcer->sourcePath().$ressourcer->other()->{'cdbPath'}, 
-					'fileName' => 'cards.cdb', 
-					'prevName' => 'cardsPrev.cdb', 
-					'replacing' => $ressourcer->sourcePath().$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
+		if($all || $normal){
+			my $generator = Generator->new(
+				'cdb' => {
+						'path' => $sourcePath.$ressourcer->other()->{'cdbPath'}, 
+						'cdbName' => 'cards.cdb', 
+						'prevCdbName' => 'cardsPrev.cdb', 
+						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
+						'opt' => [
+							'normal', 
+							$sourcePath.'AutoCompiler/submodules', 
+						]
+					},
+				'apkFolder' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}, 
+				'fileName' => $ressourcer->other()->{'apkName'}, 
 				);
-			$sqlManager->createPrev();
-			$sqlManager->doNormal($ressourcer->sourcePath().'AutoCompiler/submodules');
-			$sqlManager->movePrev();
-			$l->sayPrint('Sql File finished');
+			$generator->build();
+		}
+		if($all || $anime){
+			my $cdbName = 'cards.cdb'; 
+			my $path = $sourcePath.'AutoCompiler/submodules'; 
+			if($all){
+				$cdbName = 'cardsPrev.cdb'; 
+				$path = ''; 
+			}
+			my $generator = Generator->new(
+				'cdb' => {
+						'path' => $sourcePath.$ressourcer->other()->{'cdbPath'}, 
+						'cdbName' => $cdbName, 
+						'prevCdbName' => 'cardsAnimePrev.cdb', 
+						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
+						'opt' => [
+							'anime', 
+							$path, 
+						]
+					},
+				'apkFolder' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}, 
+				'fileName' => $ressourcer->other()->{'apkName'}, 
+				);
+			$generator->build();
 		}
 	}else{
 		$l->sayPrint('No new Updates');
 	}
 	$l->sayPrint('end') if($test);
-
 }

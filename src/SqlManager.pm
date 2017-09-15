@@ -27,7 +27,9 @@ package SqlManager{
 
 	sub doNormal(){
 		my ($self, $path) = @_;
-		$self->update($path);
+		if(defined($path) && $path ne ''){
+			$self->update($path);
+		}
 	}
 
 	sub activateAnime(){

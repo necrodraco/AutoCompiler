@@ -8,16 +8,18 @@ package AutoCompiler{
 	use Library; 
 	use Ressourcer; 
 	use GitManager; 
-	use ImageWorker; 
+	use ImageWorker;
+	use SqlManager;  
 	use Scripter;
 
 	my $l = Library->new();
 	my $sourcPath = '';
 
-	my $all = 1; 
+	my $all = 0; 
 	my $pull = 0; 
 	my $images = 0; 
 	my $scripts = 0; 
+	my $sql = 0; 
 	my $help = 0; 
 	my $test = 0; 
 	GetOptions (
@@ -25,6 +27,7 @@ package AutoCompiler{
 			'pull' => \$pull, 
 			'images' => \$images, 
 			'script' => \$scripts, 
+			'sql' => \$sql, 
 			'test' => \$test, 
 			'help' => \$help, 
 		);
@@ -35,6 +38,7 @@ package AutoCompiler{
 -pull 		= actualize all Sources
 -image 		= Prepare and Archive Images
 -script 	= Actualize the Scripts
+-sql 		= Create the Cards.cdb
 -test 		= Parameter set to activate Output
 -help 		= get these Help message
 EOF
@@ -57,7 +61,7 @@ EOF
 		$status = $gitManager->pull();
 		$l->sayPrint('Pulling newest Updates finished');
 	}
-	$status = 1 if($images || $scripts);
+	$status = 1 if($images || $scripts || $sql);
 	
 	if($status){
 		$l->sayPrint('Updates where found');
@@ -88,6 +92,19 @@ EOF
 					#Add Manually Folders
 					);
 			$l->sayPrint('Scripter Finished');
+		}
+		if($all || $sql){
+			$l->sayPrint('Do Sql Action');
+			my $sqlManager = SqlManager->new(
+					'path' => $ressourcer->sourcePath().$ressourcer->other()->{'cdbPath'}, 
+					'fileName' => 'cards.cdb', 
+					'prevName' => 'cardsPrev.cdb', 
+					'replacing' => $ressourcer->sourcePath().$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
+				);
+			$sqlManager->createPrev();
+			$sqlManager->doNormal($ressourcer->sourcePath().'AutoCompiler/submodules');
+			$sqlManager->movePrev();
+			$l->sayPrint('Sql File finished');
 		}
 	}else{
 		$l->sayPrint('No new Updates');

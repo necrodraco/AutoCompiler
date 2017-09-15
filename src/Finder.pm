@@ -9,15 +9,14 @@ package Finder{
 
 	has 'path' => ('is' => 'ro');
 	
-	my @repos;
-	my $images;
-	my $scripts;
+	my @foundArray;
+	my $founds;
 
 	sub findAllNeededRepos(){
 		my $repo = $File::Find::name; 
 		if($repo =~ m/.git/ && !($repo =~ m/.gitignore/)){
 			$repo =~ s/\/.git//g; 
-			push (@repos, $repo); 
+			push (@foundArray, $repo); 
 		}
 	}
 
@@ -25,7 +24,14 @@ package Finder{
 		my $script = $File::Find::name; 
 		if($script =~ m/.lua/){
 			my $script2 = (split('script/', $script))[1]; 
-			$scripts->{$script2} = $script; 
+			$founds->{$script2} = $script; 
+		}
+	}
+
+	sub findCDBs(){
+		my $cdb = $File::Find::name; 
+		if($cdb =~ m/.cdb/){
+			push (@foundArray, $cdb); 
 		}
 	}
 
@@ -40,25 +46,31 @@ package Finder{
 			}
 			$image2 =~ s/.png//g; 
 			$image2 =~ s/.jpg//g; 
-			$images->{$image2} = $image; 
+			$founds->{$image2} = $image; 
 		}
 	}
 	sub findRepos(){
-		my ($self, $arg) = @_;
+		my ($self) = @_;
 		find({ wanted => \&findAllNeededRepos, no_chdir=>1}, $self->path());
-		return \@repos;
+		return \@foundArray;
 	}
 
 	sub findPics(){
-		my ($self, $arg) = @_;
+		my ($self) = @_;
 		find({ wanted => \&findImages, no_chdir=>1}, $self->path());
-		return $images;
+		return $founds;
 	}
 
 	sub findScripts(){
 		my ($self) = @_;
 		find({ wanted => \&findScriptFolders, no_chdir=>1}, $self->path());
-		return $scripts; 
+		return $founds; 
+	}
+
+	sub findCDB(){
+		my ($self) = @_;
+		find({ wanted => \&findCDBs, no_chdir=>1}, $self->path());
+		return \@foundArray;
 	}
 }
 1; 

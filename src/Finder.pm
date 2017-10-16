@@ -69,6 +69,7 @@ package Finder{
 
 	sub findCDB(){
 		my ($self) = @_;
+		@foundArray = ();
 		find({ wanted => \&findCDBs, no_chdir=>1}, $self->path());
 		return \@foundArray;
 	}

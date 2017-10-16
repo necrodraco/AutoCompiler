@@ -14,7 +14,7 @@ package AutoCompiler{
 
 	my $l = Library->new();
 	
-	my $all = 0; 
+	my $all = 1; 
 	my $pull = 0; 
 	my $images = 0; 
 	my $scripts = 0; 
@@ -46,7 +46,8 @@ package AutoCompiler{
 EOF
 		exit(0);
 	}
-
+	$all = 0 if($pull || $images || $scripts || $normal || $anime || $test);
+	
 	my $ressourcer = Ressourcer->new( ressource => 'settings.properties');
 	$ressourcer->readRessources();
 
@@ -71,7 +72,7 @@ EOF
 		if($all || $images){
 			my $imageWorker = ImageWorker->new(
 				'path' => $sourcePath.'AutoCompiler/pics', 
-				'pathToGit' => $sourcePath.'AutoCompiler/submodules/Live-images/pics', 
+				'pathToGit' => $ressourcer->other()->{'pathToImages'},#$sourcePath.'AutoCompiler/submodules/Live-images/pics', 
 				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
 				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
 				'res' => $ressourcer->other(), 

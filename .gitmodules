@@ -1,6 +1,3 @@
-[submodule "submodules/Live-images"]
-	path = submodules/Live-images
-	url = https://github.com/Ygoproco/Live-images.git
 [submodule "submodules/live/Live2017MR4"]
 	path = submodules/live/Live2017MR4
 	url = https://github.com/Ygoproco/Live2017MR4.git

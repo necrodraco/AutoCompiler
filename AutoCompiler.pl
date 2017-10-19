@@ -22,14 +22,14 @@ package AutoCompiler{
 	my $help = 0; 
 	my $test = 0; 
 	GetOptions (
-			'all' => \$all, 
-			'pull' => \$pull, 
-			'images' => \$images, 
-			'script' => \$scripts, 
-			'build' => \$build, 
-			'test' => \$test, 
-			'h|help' => \$help, 
-		);
+		'all' => \$all, 
+		'pull' => \$pull, 
+		'images' => \$images, 
+		'script' => \$scripts, 
+		'build' => \$build, 
+		'test' => \$test, 
+		'h|help' => \$help, 
+	);
 
 	if($help){
 		print <<EOF;
@@ -49,15 +49,17 @@ EOF
 	}
 	$all = 0 if($pull || $images || $scripts || $build || $test);
 
+	my $fixRessourcer = Ressourcer->new( 'ressource' => 'settings.properties', 'app' => 0);
+	$fixRessourcer->readRessources();
+
 	my $ressourcer;
-	if(-e './settings.properties'){
-		$ressourcer = Ressourcer->new( 'ressource' => 'settings.properties', 'app' => 0);
+	if(-e $fixRessourcer->other()->{'settings'}){
+		$ressourcer = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'settings'}, 'app' => 0);
 	}else{
-		$ressourcer = Ressourcer->new( 'ressource' => 'template.properties', 'app' => 0);
+		$ressourcer = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'template'}, 'app' => 0);
 	}
 	$ressourcer->readRessources();
 
-	my $sourcePath = $ressourcer->sourcePath();
 	$test = 1 if($ressourcer->getTest());
 	$l->sayPrint('start') if($test); 
 
@@ -77,7 +79,7 @@ EOF
 		$l->sayPrint('Updates where found');
 		if($all || $images){
 			my $imageWorker = ImageWorker->new(
-				'path' => $sourcePath.'AutoCompiler/pics', 
+				'path' => $fixRessourcer->other()->{'pics'}, 
 				'pathToGit' => $ressourcer->other()->{'pathToImages'},#$sourcePath.'AutoCompiler/submodules/Live-images/pics', 
 				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
 				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
@@ -95,21 +97,21 @@ EOF
 		if($all || $scripts){
 			$l->sayPrint('Scripter started');
 			my $scripter = Scripter->new(
-				'src' => $sourcePath.'AutoCompiler/submodules', 
-				'dest' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
+				'src' => $fixRessourcer->other()->{'submodules'}, 
+				'dest' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
 			);
 			$scripter->updateScripts(
-					$sourcePath.$ressourcer->other()->{'pathToOldApkFolder'}.'/assets/script'
+					$ressourcer->other()->{'pathToOldApkFolder'}.'/assets/script'
 					#Add Manually Folders
 					);
 			$l->sayPrint('Scripter Finished');
 		}
 		if($all || $build){
 			my $apps; 
-			if(-e 'apps.properties'){
-				$apps = Ressourcer->new( 'ressource' => 'apps.properties', 'app' => 1);
+			if(-e $fixRessourcer->other()->{'apps'}){
+				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'apps'}, 'app' => 1);
 			}else{
-				$apps = Ressourcer->new( 'ressource' => 'app.properties', 'app' => 1);
+				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'app'}, 'app' => 1);
 			}
 			$apps->readApps();
 			while(my ($fileName, $input) = each %{$apps->app()}){
@@ -118,12 +120,12 @@ EOF
 						'path' => $input->{'path'} ? $input->{'path'} : $sourcePath.$ressourcer->other()->{'cdbPath'},
 						'cdbName' => 'cards.cdb', 
 						'prevCdbName' => $fileName.'.cdb', 
-						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',
+						'replacing' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',
 						'opt' => $input->{'opt'}, 
 					}, 
 					'apkFolder' => $input->{'apkFolder'}, 
 					'fileName' => $fileName,
-					'ressourcepath' => $sourcePath.'./AutoCompiler/submodules'
+					'ressourcepath' => $fixRessourcer->other()->{'submodules'}, 
 				);
 				$generator->build();
 			}

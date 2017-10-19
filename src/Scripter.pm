@@ -12,7 +12,6 @@ package Scripter{
 	
 	sub updateScripts(){
 		my ($self, @prevScripts) = @_;
-		use Data::Dumper; 
 		my $finder = Finder->new('path' => $self->src());
 		my $scripts = $finder->findScripts();
 		foreach my $prevScript(@prevScripts){

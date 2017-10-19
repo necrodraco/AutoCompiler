@@ -10,7 +10,6 @@ package Ressourcer{
 	
 	has 'ressource' => ( 'is' => 'rw', 'required' => 1, ); 
 	has 'app' => ( 'is' => 'rw', 'required' => 1, );
-	has 'sourcePath' => ( 'is' => 'rw', );
 	has 'other' => ('is' => 'rw', );
 
 	sub readRessources(){
@@ -27,9 +26,6 @@ package Ressourcer{
 				}
 			close($file);
 
-			if(defined($values->{'pathToHome'}) && $values->{'pathToHome'} ne ''){
-				$self->sourcePath($values->{'pathToHome'});
-			}
 			$self->other($values);
 		}else{
 			die "This Ressource is an App\n";
@@ -44,37 +40,37 @@ package Ressourcer{
 			my $temp = ();
 			my $level = 0; 
 			while (my $row = <$file>) {
-					if($row =~ m/{/){
-						$level++; 
-						$row =~ s/[{\t\n]//g;
-						push(@{$temp}, $row);
-					}elsif($row =~ m/}/){
-						$level--;
-						pop(@{$temp});
-					}else{
-						if($level == 0){
-							if(!($row =~ m/#/) && $row =~ m/=/){
-								my @items = doSplit($row);
-								$values->{$items[0]} = $items[1]; 
-							}
-						}elsif($level == 1){
-							if(!($row =~ m/#/) && $row =~ m/=/){
-								my @items = doSplit($row);
-								$values->{$temp->[0]}->{$items[0]} = $items[1]; 
-							}
-						}elsif($level == 2){
-							if(!($row =~ m/#/) && $row =~ m/=/){
-								my @items = doSplit($row);
-								$values->{$temp->[0]}->{$temp->[1]}->{$items[0]} = $items[1]; 
-							}
-						}elsif($level == 3){
-							if(!($row =~ m/#/) && $row =~ m/=/){
-								my @items = doSplit($row);
-								$values->{$temp->[0]}->{$temp->[1]}->{$temp->[2]}->{$items[0]} = $items[1]; 
-							}
+				if($row =~ m/{/){
+					$level++; 
+					$row =~ s/[{\t\n]//g;
+					push(@{$temp}, $row);
+				}elsif($row =~ m/}/){
+					$level--;
+					pop(@{$temp});
+				}else{
+					if($level == 0){
+						if(!($row =~ m/#/) && $row =~ m/=/){
+							my @items = doSplit($row);
+							$values->{$items[0]} = $items[1]; 
+						}
+					}elsif($level == 1){
+						if(!($row =~ m/#/) && $row =~ m/=/){
+							my @items = doSplit($row);
+							$values->{$temp->[0]}->{$items[0]} = $items[1]; 
+						}
+					}elsif($level == 2){
+						if(!($row =~ m/#/) && $row =~ m/=/){
+							my @items = doSplit($row);
+							$values->{$temp->[0]}->{$temp->[1]}->{$items[0]} = $items[1]; 
+						}
+					}elsif($level == 3){
+						if(!($row =~ m/#/) && $row =~ m/=/){
+							my @items = doSplit($row);
+							$values->{$temp->[0]}->{$temp->[1]}->{$temp->[2]}->{$items[0]} = $items[1]; 
 						}
 					}
 				}
+			}
 			close($file);
 			$self->app($values);
 		}else{

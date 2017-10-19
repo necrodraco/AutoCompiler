@@ -41,7 +41,7 @@ package Generator{
 
 	sub doApk(){
 		my ($self, $fileName) = @_; 
-		$self->doCommand('apktool b -o '.$fileName.'.apk '.$self->apkFolder());
+		$self->doCommand('java -jar apktool.jar b -o '.$fileName.'.apk '.$self->apkFolder());
 		$self->doCommand('apksign '.$fileName.'.apk');
 		$self->doCommand('mv '.$fileName.'.s.apk '.$fileName.'.apk');
 	}

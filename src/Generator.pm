@@ -8,9 +8,10 @@ package Generator{
 	use SqlManager;  
 
 	has 'cdb' 		=> ('is' => 'rw', 'required' => 1, );
-	has 'apkFolder' => ('is' => 'rw', 'required' => 1);
+	has 'apkFolder' => ('is' => 'rw', 'required' => 1, );
 	has 'fileName' 	=> ('is' => 'rw', 'required' => 1, );
-
+	has 'ressourcepath' => ('is' => 'rw', 'required' => 1, );
+	
 	sub build(){
 		my ($self) = @_; 
 		$self->sayPrint('Do Sql Action');
@@ -31,12 +32,9 @@ package Generator{
 	sub doOpt(){
 		my ($self, $sqlManager, $opt) = @_; 
 
-		if($opt->[0] eq 'normal'){
-			$sqlManager->doNormal($opt->[1]);
-		}
-		elsif($opt->[0] eq 'anime'){
-			$sqlManager->doNormal($opt->[1]);
-			$sqlManager->activateAnime()
+		$sqlManager->doNormal($self->ressourcepath());
+		if(defined($opt->{'anime'}) && $opt->{'anime'} == 1){
+			$sqlManager->activateAnime(); 
 		}
 
 	}

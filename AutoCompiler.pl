@@ -18,8 +18,7 @@ package AutoCompiler{
 	my $pull = 0; 
 	my $images = 0; 
 	my $scripts = 0; 
-	my $normal = 0; 
-	my $anime = 0; 
+	my $build = 0; 
 	my $help = 0; 
 	my $test = 0; 
 	GetOptions (
@@ -27,18 +26,20 @@ package AutoCompiler{
 			'pull' => \$pull, 
 			'images' => \$images, 
 			'script' => \$scripts, 
-			'normal' => \$normal,
-			'anime' => \$anime,  
+			'build' => \$build, 
 			'test' => \$test, 
-			'help' => \$help, 
+			'h|help' => \$help, 
 		);
 
 	if($help){
 		print <<EOF;
+Usage: AutoCompiler <param>
+
 -all 		= Do all -> DEFAULT
 -pull 		= actualize all Sources
 -image 		= Prepare and Archive Images
 -script 	= Actualize the Scripts
+-build 		= build all APK
 -normal 	= Build Normal APK
 -anime 		= Build Anime APK
 -test 		= Parameter set to activate Output
@@ -46,9 +47,14 @@ package AutoCompiler{
 EOF
 		exit(0);
 	}
-	$all = 0 if($pull || $images || $scripts || $normal || $anime || $test);
-	
-	my $ressourcer = Ressourcer->new( ressource => 'settings.properties');
+	$all = 0 if($pull || $images || $scripts || $build || $test);
+
+	my $ressourcer;
+	if(-e './settings.properties'){
+		$ressourcer = Ressourcer->new( 'ressource' => 'settings.properties', 'app' => 0);
+	}else{
+		$ressourcer = Ressourcer->new( 'ressource' => 'template.properties', 'app' => 0);
+	}
 	$ressourcer->readRessources();
 
 	my $sourcePath = $ressourcer->sourcePath();
@@ -98,45 +104,30 @@ EOF
 					);
 			$l->sayPrint('Scripter Finished');
 		}
-		if($all || $normal){
-			my $generator = Generator->new(
-				'cdb' => {
-						'path' => $sourcePath.$ressourcer->other()->{'cdbPath'}, 
-						'cdbName' => 'cards.cdb', 
-						'prevCdbName' => 'cardsPrev.cdb', 
-						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
-						'opt' => [
-							'normal', 
-							$sourcePath.'AutoCompiler/submodules', 
-						]
-					},
-				'apkFolder' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}, 
-				'fileName' => $ressourcer->other()->{'apkName'}, 
-				);
-			$generator->build();
-		}
-		if($all || $anime){
-			my $cdbName = 'cards.cdb'; 
-			my $path = $sourcePath.'AutoCompiler/submodules'; 
-			if($all){
-				$cdbName = 'cardsPrev.cdb'; 
-				$path = ''; 
+		if($all || $build){
+			my $apps; 
+			if(-e 'apps.properties'){
+				$apps = Ressourcer->new( 'ressource' => 'apps.properties', 'app' => 1);
+			}else{
+				$apps = Ressourcer->new( 'ressource' => 'app.properties', 'app' => 1);
 			}
-			my $generator = Generator->new(
-				'cdb' => {
-						'path' => $sourcePath.$ressourcer->other()->{'cdbPath'}, 
-						'cdbName' => $cdbName, 
-						'prevCdbName' => 'cardsAnimePrev.cdb', 
-						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb', 
-						'opt' => [
-							'anime', 
-							$path, 
-						]
-					},
-				'apkFolder' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}, 
-				'fileName' => $ressourcer->other()->{'apkName'}, 
+			$apps->readApps();
+			while(my ($fileName, $input) = each %{$apps->app()}){
+				my $generator = Generator->new(
+					'cdb' => {
+						'path' => $input->{'path'} ? $input->{'path'} : $sourcePath.$ressourcer->other()->{'cdbPath'},
+						'cdbName' => 'cards.cdb', 
+						'prevCdbName' => $fileName.'.cdb', 
+						'replacing' => $sourcePath.$ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',
+						'opt' => $input->{'opt'}, 
+					}, 
+					'apkFolder' => $input->{'apkFolder'}, 
+					'fileName' => $fileName,
+					'ressourcepath' => $sourcePath.'./AutoCompiler/submodules'
 				);
-			$generator->build();
+				$generator->build();
+			}
+			
 		}
 	}else{
 		$l->sayPrint('No new Updates');

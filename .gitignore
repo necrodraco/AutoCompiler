@@ -11,3 +11,9 @@ pics/*
 pics_normal*
 ygopro/*
 cdbFiles/*
+apps.properties
+
+!img/empty.txt
+!imgOld/empty.txt
+!imgMain/empty.txt
+!pics/empty.txt

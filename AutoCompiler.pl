@@ -49,7 +49,7 @@ EOF
 	}
 	$all = 0 if($pull || $images || $scripts || $build || $test);
 
-	my $fixRessourcer = Ressourcer->new( 'ressource' => 'settings.properties', 'app' => 0);
+	my $fixRessourcer = Ressourcer->new( 'ressource' => 'src/fix.properties', 'app' => 0);
 	$fixRessourcer->readRessources();
 
 	my $ressourcer;
@@ -73,14 +73,14 @@ EOF
 		$status = $gitManager->pull();
 		$l->sayPrint('Pulling newest Updates finished');
 	}
-	$status = 1 if($images || $scripts || $normal || $anime);
+	$status = 1 if($images || $scripts || $build);
 	
 	if($status){
 		$l->sayPrint('Updates where found');
 		if($all || $images){
 			my $imageWorker = ImageWorker->new(
 				'path' => $fixRessourcer->other()->{'pics'}, 
-				'pathToGit' => $ressourcer->other()->{'pathToImages'},#$sourcePath.'AutoCompiler/submodules/Live-images/pics', 
+				'pathToGit' => $ressourcer->other()->{'pathToImages'},#submodules/Live-images/pics', 
 				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
 				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
 				'res' => $ressourcer->other(), 
@@ -117,7 +117,7 @@ EOF
 			while(my ($fileName, $input) = each %{$apps->app()}){
 				my $generator = Generator->new(
 					'cdb' => {
-						'path' => $input->{'path'} ? $input->{'path'} : $sourcePath.$ressourcer->other()->{'cdbPath'},
+						'path' => $input->{'path'} ? $input->{'path'} : $ressourcer->other()->{'cdbPath'},
 						'cdbName' => 'cards.cdb', 
 						'prevCdbName' => $fileName.'.cdb', 
 						'replacing' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',

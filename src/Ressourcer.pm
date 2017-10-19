@@ -15,7 +15,7 @@ package Ressourcer{
 	sub readRessources(){
 		my ($self) = @_; 
 		if($self->app() == 0){
-			open(my $file, '<', $self->ressource()) or die 'cant open '.$self->filename();
+			open(my $file, '<', $self->ressource()) or die 'cant open '.$self->ressource();
 			my $values = ();
 			while (my $row = <$file>) {
 					if(!($row =~ m/#/) && $row =~ m/=/){
@@ -35,7 +35,7 @@ package Ressourcer{
 	sub readApps(){
 		my ($self) = @_; 
 		if($self->app()){
-			open(my $file, '<', $self->ressource()) or die 'cant open '.$self->filename();
+			open(my $file, '<', $self->ressource()) or die 'cant open '.$self->ressource();
 			my $values = ();
 			my $temp = ();
 			my $level = 0; 

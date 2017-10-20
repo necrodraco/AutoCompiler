@@ -18,6 +18,7 @@ package GitManager{
 			#my $status = 
 			$self->doCommand("cd $argument && git pull");
 		}
+		$finder->clearFinder();
 		return $self->changed();
 	}
 }

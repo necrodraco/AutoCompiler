@@ -11,7 +11,7 @@ package Generator{
 	has 'apkFolder' => ('is' => 'rw', 'required' => 1, );
 	has 'fileName' 	=> ('is' => 'rw', 'required' => 1, );
 	has 'ressourcepath' => ('is' => 'rw', 'required' => 1, );
-	
+
 	sub build(){
 		my ($self) = @_; 
 		$self->sayPrint('Do Sql Action');
@@ -41,7 +41,7 @@ package Generator{
 
 	sub doApk(){
 		my ($self, $fileName) = @_; 
-		$self->doCommand('java -jar apktool.jar b -o '.$fileName.'.apk '.$self->apkFolder());
+		$self->doCommand('java -jar src/apktool.jar b -o '.$fileName.'.apk '.$self->apkFolder());
 		$self->doCommand('apksign '.$fileName.'.apk');
 		$self->doCommand('mv '.$fileName.'.s.apk '.$fileName.'.apk');
 	}

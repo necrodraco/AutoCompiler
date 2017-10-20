@@ -81,9 +81,10 @@ EOF
 			my $imageWorker = ImageWorker->new(
 				'path' => $fixRessourcer->other()->{'pics'}, 
 				'pathToGit' => $ressourcer->other()->{'pathToImages'},#submodules/Live-images/pics', 
-				'pathToSrc' => $ressourcer->other()->{'picsPatch'}, 
-				'pathToMain' => $ressourcer->other()->{'picsMain'}, 
-				'res' => $ressourcer->other(), 
+				'pathToSrc' => $fixRessourcer->other()->{'picsPatch'}, 
+				'pathToMain' => $fixRessourcer->other()->{'picsMain'}, 
+				'res' => $ressourcer->other()->{'patchObb'}, 
+				'zipArchive' => $fixRessourcer->other()->{'zipArchive'},
 			);
 			$l->sayPrint('Images will be prepared to create Image File');
 			$imageWorker->readImages(); 
@@ -117,7 +118,7 @@ EOF
 			while(my ($fileName, $input) = each %{$apps->app()}){
 				my $generator = Generator->new(
 					'cdb' => {
-						'path' => $input->{'path'} ? $input->{'path'} : $ressourcer->other()->{'cdbPath'},
+						'path' => $input->{'path'} ? $input->{'path'} : $fixRessourcer->other()->{'cdbPath'},
 						'cdbName' => 'cards.cdb', 
 						'prevCdbName' => $fileName.'.cdb', 
 						'replacing' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',

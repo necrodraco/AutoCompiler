@@ -52,9 +52,7 @@ package SqlManager{
 		$self->dbh()->disconnect();
 		my $src = $self->path().'/'.$self->prevName(); 
 		my $dest = $self->replacing();
-		$self->sayPrint('src: '.$src);
-		$self->sayPrint('dest: '.$dest);
-		copy($src, $dest) or die "Copy failed: $!";
+		rename($src, $dest) or die "Moving CDB failed: $!";
 	}
 
 	sub doSqlCommand(){
@@ -69,6 +67,7 @@ package SqlManager{
 		my ($self, $path) = @_;
 		my $finder = Finder->new('path' => $path);
 		my $cdbs = $finder->findCDB();
+		$finder->clearFinder();
 		$self->sayPrint('Updates CDB File');
 		foreach my $cdbFile(@{$cdbs}){
 			$self->doSqlCommand('attach "'.$cdbFile.'" as toMerge');

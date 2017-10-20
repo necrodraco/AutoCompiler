@@ -12,6 +12,11 @@ package Finder{
 	my @foundArray;
 	my $founds;
 
+	sub clearFinder(){
+		@foundArray = (); 
+		$founds = ();
+	}
+
 	sub findAllNeededRepos(){
 		my $repo = $File::Find::name; 
 		if($repo =~ m/.git/ && !($repo =~ m/.gitignore/)){
@@ -69,7 +74,6 @@ package Finder{
 
 	sub findCDB(){
 		my ($self) = @_;
-		@foundArray = ();
 		find({ wanted => \&findCDBs, no_chdir=>1}, $self->path());
 		return \@foundArray;
 	}

@@ -16,7 +16,8 @@ package ImageWorker{
 	has 'pathToSrc' => ('is' => 'rw', 'required' => 1, ); 
 	has 'pathToMain' => ('is' => 'rw', 'required' => 1, );
 	has 'images' => ('is' => 'rw', );
-	has 'res' => ('is' => 'rw', );
+	has 'res' => ('is' => 'rw', 'required' => 1, );
+	has 'zipArchive' => ('is' => 'rw', 'required' => 1, );
 
 	sub readImages(){
 		my ($self) = @_;
@@ -31,6 +32,7 @@ package ImageWorker{
 		$finder->findPics();
 		$list = $self->remove($list, $self->pathToMain());
 		$self->images($list); 
+		$finder->clearFinder();
 	}
 
 	sub remove(){
@@ -79,12 +81,12 @@ package ImageWorker{
 		my $args = {
 			'folder1' => 'pics', 
 		};
-		$self->archiveImages($self->res()->{'patchObb'}, $args);
+		$self->archiveImages($self->res(), $args);
 
 		$args = {
-			'file1' => $self->res()->{'patchObb'}, 
+			'file1' => $self->res(), 
 		};
-		$self->archiveImages($self->res()->{'zipArchive'}, $args, 1);
+		$self->archiveImages($self->zipArchive(), $args, 1);
 	}
 }
 1; 

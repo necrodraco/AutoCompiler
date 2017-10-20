@@ -6,6 +6,7 @@ package Scripter{
 	extends 'Library';
 
 	use Finder; 
+	use File::Copy;
 
 	has 'src' => ('is' => 'rw', 'required' => 1);
 	has 'dest' => ('is' => 'rw', 'required' => 1);
@@ -21,8 +22,10 @@ package Scripter{
 		
 		$self->doCommand('cd '.$self->dest().' && rm *.lua');
 		while(my ($name, $path) = each %{$scripts}){
-			symlink($path, $self->dest().'/'.$name);
+			#symlink($path, $self->dest().'/'.$name);
+			copy($path, $self->dest().'/'.$name);
 		}
+		$finder->clearFinder();
 	}
 }
 1; 

@@ -6,6 +6,7 @@ package AutoCompiler{
 
 	use lib 'src';
 	use Library; 
+	use PrepareManager; 
 	use Ressourcer; 
 	use GitManager; 
 	use ImageWorker;
@@ -15,14 +16,17 @@ package AutoCompiler{
 	my $l = Library->new();
 	
 	my $all = 1; 
+	my $apk = 0; 
 	my $pull = 0; 
 	my $images = 0; 
 	my $scripts = 0; 
 	my $build = 0; 
 	my $help = 0; 
-	my $test = 0; 
+	my $test = 0;
+
 	GetOptions (
 		'all' => \$all, 
+		'apk' => \$apk, 
 		'pull' => \$pull, 
 		'images' => \$images, 
 		'script' => \$scripts, 
@@ -36,6 +40,7 @@ package AutoCompiler{
 Usage: AutoCompiler <param>
 
 -all 		= Do all -> DEFAULT
+-apk 		= Update the APK. Place the new Ygopro.apk in the AutoCompiler Folder and use these parameter
 -pull 		= actualize all Sources
 -image 		= Prepare and Archive Images
 -script 	= Actualize the Scripts
@@ -64,6 +69,16 @@ EOF
 	$l->sayPrint('start') if($test); 
 
 	$l->sayPrint('finished setting Ressources') if($test);
+
+	if($apk || !(-e $ressourcer->other()->{'pathToApkFolder'})){
+		$l->sayPrint('Missing Unpacked Files. Start Preparation Module');
+		my $prepareManager = PrepareManager->new(
+			'path' => $ressourcer->other()->{'pathToApkFolder'}, 
+			'pathOld' => $ressourcer->other()->{'pathToOldApkFolder'}, 
+			'apk' => 'Ygopro.apk', 
+		);
+		$prepareManager->prepare();
+	}
 
 	my $status = 0;#
 	if($all || $pull){

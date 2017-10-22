@@ -1,10 +1,7 @@
 #! /usr/bin/perl
 
-use strict; 
-use warnings; 
-	
 package Ressourcer{
-	use Moo; 
+	use Moose; 
 	
 	use Library; 
 	

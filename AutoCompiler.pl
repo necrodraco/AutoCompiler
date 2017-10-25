@@ -24,6 +24,8 @@ package AutoCompiler{
 	my $help = 0; 
 	my $test = 0;
 
+	my $upload = 0; 
+
 	GetOptions (
 		'all' => \$all, 
 		'apk' => \$apk, 
@@ -33,6 +35,8 @@ package AutoCompiler{
 		'build' => \$build, 
 		'test' => \$test, 
 		'h|help' => \$help, 
+		#Undocumentend. hidden Functions
+		'upload' => \$upload, 
 	);
 
 	if($help){
@@ -45,8 +49,6 @@ Usage: AutoCompiler <param>
 -image 		= Prepare and Archive Images
 -script 	= Actualize the Scripts
 -build 		= build all APK
--normal 	= Build Normal APK
--anime 		= Build Anime APK
 -test 		= Parameter set to activate Output
 -help 		= get these Help message
 EOF
@@ -146,6 +148,11 @@ EOF
 				$generator->build();
 			}
 			
+		}
+		if(-e 'src/Uploader.pm' && $upload){
+			require Uploader; 
+			my $uploader = Uploader->new();
+			$uploader->upload();
 		}
 	}else{
 		$l->sayPrint('No new Updates');

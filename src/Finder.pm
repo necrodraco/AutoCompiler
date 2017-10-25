@@ -36,7 +36,8 @@ package Finder{
 	sub findCDBs(){
 		my $cdb = $File::Find::name; 
 		if($cdb =~ m/.cdb/){
-			push (@foundArray, $cdb); 
+			$founds->{$cdb} = $cdb;
+			#push (@foundArray, $cdb); 
 		}
 	}
 
@@ -75,7 +76,7 @@ package Finder{
 	sub findCDB(){
 		my ($self) = @_;
 		find({ wanted => \&findCDBs, no_chdir=>1}, $self->path());
-		return \@foundArray;
+		return $founds;
 	}
 }
 1; 

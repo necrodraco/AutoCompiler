@@ -69,7 +69,7 @@ package SqlManager{
 		my $cdbs = $finder->findCDB();
 		$finder->clearFinder();
 		$self->sayPrint('Updates CDB File');
-		foreach my $cdbFile(@{$cdbs}){
+		while(my ($x, $cdbFile) = each %{$cdbs}){
 			$self->doSqlCommand('attach "'.$cdbFile.'" as toMerge');
 			$self->doSqlCommand('insert or ignore into datas select * from toMerge.datas');
 			$self->doSqlCommand('insert or ignore into texts select * from toMerge.texts');

@@ -8,7 +8,7 @@ $number_of_tests_run = 2;
 #name=$(Befehl)
 system 'var';
 system '$var=$(java -version)';
-my $var = (system 'echo var');
+my $var = (system 'echo $var');
 print $var; 
 
 exit(0);

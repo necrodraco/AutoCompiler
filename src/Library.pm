@@ -6,9 +6,13 @@ package Library{
 	use Data::Dumper; 
 	use POSIX qw/strftime/;
 
+	sub getTime(){
+		return strftime "%d-%m-%Y %H:%M:%S ", localtime(time); 
+	}
+
 	sub sayPrint(){
 		my ($self, $string) = @_;
-		my $time = strftime "%d-%m-%Y %H:%M:%S ", localtime(time);
+		my $time = $self->getTime();
 		say $time.$string; 
 	}
 

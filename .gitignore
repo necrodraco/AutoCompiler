@@ -3,6 +3,7 @@ ygopro*
 img/*
 imgOld/*
 imgMain/*
+src/Uploader*
 *.apk
 pics/*
 *.obb

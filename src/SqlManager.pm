@@ -71,8 +71,8 @@ package SqlManager{
 		$self->sayPrint('Updates CDB File');
 		while(my ($x, $cdbFile) = each %{$cdbs}){
 			$self->doSqlCommand('attach "'.$cdbFile.'" as toMerge');
-			$self->doSqlCommand('insert or ignore into datas select * from toMerge.datas');
-			$self->doSqlCommand('insert or ignore into texts select * from toMerge.texts');
+			$self->doSqlCommand('insert or replace into datas select * from toMerge.datas');
+			$self->doSqlCommand('insert or replace into texts select * from toMerge.texts');
 			$self->doSqlCommand('detach toMerge');
 		}
 		$self->sayPrint('Finished Updating');

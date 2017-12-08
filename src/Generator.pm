@@ -6,6 +6,7 @@ package Generator{
 	extends 'Library';
 
 	use SqlManager;  
+	use AiManager; 
 
 	has 'cdb' 		=> ('is' => 'rw', 'required' => 1, );
 	has 'apkFolder' => ('is' => 'rw', 'required' => 1, );
@@ -23,6 +24,8 @@ package Generator{
 		);
 		$sqlManager->createPrev();
 		$self->doOpt($sqlManager, $self->cdb()->{'opt'});
+		my $ai = AiManager->new('destination' => $self->apkFolder(), 'aioption' => $self->cdb()->{'ai'});
+		$ai->doAi();
 		$sqlManager->movePrev();
 		$self->sayPrint('Sql File finished');
 		$self->doApk($self->fileName());
@@ -45,6 +48,5 @@ package Generator{
 		$self->doCommand('apksign '.$fileName.'.apk');
 		$self->doCommand('mv '.$fileName.'.s.apk '.$fileName.'.apk');
 	}
-
 }
 1; 

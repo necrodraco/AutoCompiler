@@ -35,7 +35,7 @@ package AutoCompiler{
 		'build' => \$build, 
 		'test' => \$test, 
 		'h|help' => \$help, 
-		#Undocumentend. hidden Functions
+		#Undocumented. hidden Functions
 		'upload' => \$upload, 
 	);
 
@@ -115,7 +115,7 @@ EOF
 		if($all || $scripts){
 			$l->sayPrint('Scripter started');
 			my $scripter = Scripter->new(
-				'src' => $fixRessourcer->other()->{'submodules'}, 
+				'src' => $fixRessourcer->other()->{'submodules'}.'/live', 
 				'dest' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
 			);
 			$scripter->updateScripts(
@@ -139,7 +139,8 @@ EOF
 						'cdbName' => 'cards.cdb', 
 						'prevCdbName' => $fileName.'.cdb', 
 						'replacing' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',
-						'opt' => $input->{'opt'}, 
+						'opt' => $input->{'opt'},
+						'ai' => $input->{'ai'},
 					}, 
 					'apkFolder' => $input->{'apkFolder'}, 
 					'fileName' => $fileName,

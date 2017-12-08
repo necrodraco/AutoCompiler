@@ -27,5 +27,12 @@ package Library{
 			$self->sayPrint('One Command was not set. ');
 		}
 	}
+
+	sub moveMultiple(){
+		my ($self, $fileWildCard, $target) = @_;
+		foreach my $file(glob $fileWildCard){
+			rename($file, $target.$file);
+		}
+	}
 }
 1;

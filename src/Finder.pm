@@ -7,7 +7,7 @@ package Finder{
 
 	use File::Find; 
 
-	has 'path' => ('is' => 'ro');
+	has 'path' => ('is' => 'ro', 'required' => 1, );
 	
 	my @foundArray;
 	my $founds;
@@ -19,7 +19,7 @@ package Finder{
 
 	sub findAllNeededRepos(){
 		my $repo = $File::Find::name; 
-		if($repo =~ m/.git/ && !($repo =~ m/.gitignore/)){
+		if($repo =~ m/.git/ && !($repo =~ m/.gitignore/ || $repo =~ m/.gitattributes/)){
 			$repo =~ s/\/.git//g; 
 			push (@foundArray, $repo); 
 		}
@@ -37,7 +37,6 @@ package Finder{
 		my $cdb = $File::Find::name; 
 		if($cdb =~ m/.cdb/){
 			$founds->{$cdb} = $cdb;
-			#push (@foundArray, $cdb); 
 		}
 	}
 
@@ -50,9 +49,16 @@ package Finder{
 			}elsif($image2 =~ m/field\//){
 				$image2 = (split(/field\//, $image2))[1]; 
 			}
-			$image2 =~ s/.png//g; 
-			$image2 =~ s/.jpg//g; 
+			$image2 =~ s/(.png|.jpg)//g; 
 			$founds->{$image2} = $image; 
+		}
+	}
+	sub findAiDeck(){
+		my $deck = $File::Find::name; 
+		if($deck =~ m/.ydk/# || $deck =~ m/.lua/
+			){
+			my $name = (split(/\//, $deck))[-1];
+			$founds->{$name} = {'path' => $deck,'stat' => 0, };
 		}
 	}
 	sub findRepos(){
@@ -76,6 +82,11 @@ package Finder{
 	sub findCDB(){
 		my ($self) = @_;
 		find({ wanted => \&findCDBs, no_chdir=>1}, $self->path());
+		return $founds;
+	}
+	sub findAiDecks(){
+		my ($self) = @_;
+		find({ wanted => \&findAiDeck, no_chdir=>1}, $self->path());
 		return $founds;
 	}
 }

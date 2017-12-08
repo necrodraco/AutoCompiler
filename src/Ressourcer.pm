@@ -3,7 +3,7 @@
 package Ressourcer{
 	use Moose; 
 	
-	use Library; 
+	extends 'Library'; 
 	
 	has 'ressource' => ( 'is' => 'rw', 'required' => 1, ); 
 	has 'app' => ( 'is' => 'rw', 'required' => 1, );
@@ -34,16 +34,18 @@ package Ressourcer{
 		if($self->app()){
 			open(my $file, '<', $self->ressource()) or die 'cant open '.$self->ressource();
 			my $values = ();
-			my $temp = ();
+			my @temp = ();
 			my $level = 0; 
 			while (my $row = <$file>) {
+				$row =~ s/[\t\n]//g;
+				#$self->sayPrint('row:'.$row.' level: '.$level);
 				if($row =~ m/{/){
 					$level++; 
-					$row =~ s/[{\t\n]//g;
-					push(@{$temp}, $row);
+					$row =~ s/{//g;
+					push(@temp, $row);
 				}elsif($row =~ m/}/){
 					$level--;
-					pop(@{$temp});
+					pop(@temp);
 				}else{
 					if($level == 0){
 						if(!($row =~ m/#/) && $row =~ m/=/){
@@ -53,17 +55,17 @@ package Ressourcer{
 					}elsif($level == 1){
 						if(!($row =~ m/#/) && $row =~ m/=/){
 							my @items = doSplit($row);
-							$values->{$temp->[0]}->{$items[0]} = $items[1]; 
+							$values->{$temp[0]}->{$items[0]} = $items[1]; 
 						}
 					}elsif($level == 2){
 						if(!($row =~ m/#/) && $row =~ m/=/){
 							my @items = doSplit($row);
-							$values->{$temp->[0]}->{$temp->[1]}->{$items[0]} = $items[1]; 
+							$values->{$temp[0]}->{$temp[1]}->{$items[0]} = $items[1]; 
 						}
 					}elsif($level == 3){
 						if(!($row =~ m/#/) && $row =~ m/=/){
 							my @items = doSplit($row);
-							$values->{$temp->[0]}->{$temp->[1]}->{$temp->[2]}->{$items[0]} = $items[1]; 
+							$values->{$temp[0]}->{$temp[1]}->{$temp[2]}->{$items[0]} = $items[1]; 
 						}
 					}
 				}

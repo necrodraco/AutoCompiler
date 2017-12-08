@@ -1,4 +1,5 @@
 settings.properties
+custom_ai
 ygopro*
 img/*
 imgOld/*
@@ -12,6 +13,7 @@ pics_normal*
 ygopro/*
 cdbFiles/*
 apps.properties
+1 
 
 !img/empty.txt
 !imgOld/empty.txt

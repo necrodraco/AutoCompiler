@@ -1,6 +1,6 @@
-[submodule "live2017"]
-	path = submodules/live/live2017
-	url = https://github.com/Ygoproco/Live2017.git
-[submodule "liveanime"]
-	path = submodules/live/liveanime
-	url = https://github.com/Ygoproco/Liveanime.git
+[submodule "submodules/live/Live2017Links"]
+	path = submodules/live/Live2017Links
+	url = https://github.com/Ygoproco/Live2017Links
+[submodule "submodules/live/LiveanimeLinks"]
+	path = submodules/live/LiveanimeLinks
+	url = https://github.com/Ygoproco/LiveanimeLinks

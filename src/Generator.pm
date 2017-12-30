@@ -46,7 +46,8 @@ package Generator{
 		my ($self, $fileName) = @_; 
 		$self->doCommand('java -jar src/apktool.jar b -o '.$fileName.'.apk '.$self->apkFolder());
 		$self->doCommand('apksign '.$fileName.'.apk');
-		$self->doCommand('mv '.$fileName.'.s.apk '.$fileName.'.apk');
+		#EXPERIMENTAL Wording Added due to MR4
+		$self->doCommand('mv '.$fileName.'.s.apk '.$fileName.'EXPERIMENTAL.apk');
 	}
 }
 1; 

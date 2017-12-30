@@ -29,6 +29,14 @@ package SqlManager{
 		my ($self, $path) = @_;
 		if(defined($path) && $path ne ''){
 			$self->update($path);
+
+			#Remove Link Monsters. 
+			$self->doSqlCommand(
+				'
+					DELETE FROM datas 
+					WHERE type = 67108897
+				'
+			);
 		}
 	}
 
@@ -45,6 +53,7 @@ package SqlManager{
 			)'
 		); 
 		$self->doSqlCommand('update datas set ot = 3 where ot = 4');
+
 	}
 
 	sub movePrev(){

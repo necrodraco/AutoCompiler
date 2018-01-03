@@ -14,7 +14,6 @@ package AiManager{
 	sub doAi(){
 		my ($self) = @_;
 		
-		$self->sayPrint('ailist: '.(Dumper $self->aioption())); 
 		my $finder = Finder->new('path' => 'ai'); 
 		my $list = $finder->findAiDecks();
 		if(defined($self->aioption()->{'custom'})
@@ -31,7 +30,9 @@ package AiManager{
 		}else{
 			$self->sayPrint('hasn\'t all ai');
 			foreach my $ai(keys %{$self->aioption()}){
+				$ai .= '.ydk';
 				if($ai =~ m/ai_/i && defined($list->{$ai})){
+					$self->sayPrint($ai.'was setted');
 					$list->{$ai}->{'stat'} = 1; 
 				}
 			}

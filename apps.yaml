@@ -1,0 +1,30 @@
+ygopro_normal: 
+ apkFolder: ./ygopro
+ opt: 
+  anime: 0
+ ai: 
+  all: 1
+ygopro_anime: 
+ apkFolder: ./ygopro
+ opt: 
+  anime: 1
+ ai: 
+  all: 1
+ygoproCustom: 
+ apkFolder: ./ygoproCustom
+ opt: 
+  anime: 0
+ ai: 
+  AI_ABC: 1
+  AI_BAPK: 1
+  AI_BurningAbyss: 1
+  AI_Eidolon: 1
+  AI_HAT: 1
+  AI_Kozmo: 1
+  AI_Lightsworn: 1
+  AI_Majespecter: 1
+  AI_MaskedHERO: 1
+  AI_Mermail: 1
+  AI_Qliphort: 1
+  AI_Wizard: 1
+  custom: 1

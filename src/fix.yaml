@@ -1,0 +1,10 @@
+settings: settings.yaml
+template: template.yaml
+apps: apps.yaml
+app: app.yaml
+pics: pics
+submodules: submodules
+zipArchive: pics_normal.zip
+picsPatch: imgOld
+picsMain: imgMain
+cdbPath: src

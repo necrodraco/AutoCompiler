@@ -1,0 +1,6 @@
+testing: null #Output of Test Messages
+pathToImages: null #Where are your Card Pics are saved? 
+pathToApkFolder: null #Path where the Decompiled Apk Folder is
+pathToOldApkFolder: null #Path to the Old APK Folder which contains saved Scripts
+patchObb: patch.49.co.ygopro.ygoproandroid.obb #Name of the actual patch.obb version
+originalScriptFolder: null #Where is the original Script Folder of your local ygopro version

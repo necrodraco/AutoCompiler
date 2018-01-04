@@ -3,11 +3,11 @@
 package AutoCompiler{
 	use Moose; 
 	use Getopt::Long; 
+	use YAML 'LoadFile'; 
 
 	use lib 'src';
 	use Library; 
 	use PrepareManager; 
-	use Ressourcer; 
 	use GitManager; 
 	use ImageWorker;
 	use Scripter;
@@ -56,27 +56,25 @@ EOF
 	}
 	$all = 0 if($pull || $images || $scripts || $build || $test);
 
-	my $fixRessourcer = Ressourcer->new( 'ressource' => 'src/fix.properties', 'app' => 0);
-	$fixRessourcer->readRessources();
-
+	my $fixRessourcer = LoadFile('src/fix.yaml');
+	
 	my $ressourcer;
-	if(-e $fixRessourcer->other()->{'settings'}){
-		$ressourcer = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'settings'}, 'app' => 0);
+	if(-e $fixRessourcer->{'settings'}){
+		$ressourcer = LoadFile($fixRessourcer->{'settings'});
 	}else{
-		$ressourcer = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'template'}, 'app' => 0);
+		$ressourcer = LoadFile($fixRessourcer->{'template'});
 	}
-	$ressourcer->readRessources();
 
-	$test = 1 if($ressourcer->getTest());
+	$test = 1 if($ressourcer->{'testing'});
 	$l->sayPrint('start') if($test); 
 
 	$l->sayPrint('finished setting Ressources') if($test);
 
-	if($apk || !(-e $ressourcer->other()->{'pathToApkFolder'})){
+	if($apk || !(-e $ressourcer->{'pathToApkFolder'})){
 		$l->sayPrint('Missing Unpacked Files. Start Preparation Module');
 		my $prepareManager = PrepareManager->new(
-			'path' => $ressourcer->other()->{'pathToApkFolder'}, 
-			'pathOld' => $ressourcer->other()->{'pathToOldApkFolder'}, 
+			'path' => $ressourcer->{'pathToApkFolder'}, 
+			'pathOld' => $ressourcer->{'pathToOldApkFolder'}, 
 			'apk' => 'Ygopro.apk', 
 		);
 		$prepareManager->prepare();
@@ -96,12 +94,12 @@ EOF
 		$l->sayPrint('Updates where found');
 		if($all || $images){
 			my $imageWorker = ImageWorker->new(
-				'path' => $fixRessourcer->other()->{'pics'}, 
-				'pathToGit' => $ressourcer->other()->{'pathToImages'},#submodules/Live-images/pics', 
-				'pathToSrc' => $fixRessourcer->other()->{'picsPatch'}, 
-				'pathToMain' => $fixRessourcer->other()->{'picsMain'}, 
-				'res' => $ressourcer->other()->{'patchObb'}, 
-				'zipArchive' => $fixRessourcer->other()->{'zipArchive'},
+				'path' => $fixRessourcer->{'pics'}, 
+				'pathToGit' => $ressourcer->{'pathToImages'},#submodules/Live-images/pics', 
+				'pathToSrc' => $fixRessourcer->{'picsPatch'}, 
+				'pathToMain' => $fixRessourcer->{'picsMain'}, 
+				'res' => $ressourcer->{'patchObb'}, 
+				'zipArchive' => $fixRessourcer->{'zipArchive'},
 			);
 			$l->sayPrint('Images will be prepared to create Image File');
 			$imageWorker->readImages(); 
@@ -115,36 +113,36 @@ EOF
 		if($all || $scripts){
 			$l->sayPrint('Scripter started');
 			my $scripter = Scripter->new(
-				'src' => $fixRessourcer->other()->{'submodules'}.'/live', 
-				'dest' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/script', 
+				'src' => $fixRessourcer->{'submodules'}.'/live', 
+				'dest' => $ressourcer->{'pathToApkFolder'}.'/assets/script', 
 			);
 			$scripter->updateScripts(
-					$ressourcer->other()->{'pathToOldApkFolder'}.'/assets/script'
+					$ressourcer->{'pathToOldApkFolder'}.'/assets/script'
 					#Add Manually Folders
 					);
 			$l->sayPrint('Scripter Finished');
 		}
 		if($all || $build){
 			my $apps; 
-			if(-e $fixRessourcer->other()->{'apps'}){
-				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'apps'}, 'app' => 1);
+			if(-e $fixRessourcer->{'apps'}){
+				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->{'apps'});
 			}else{
-				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->other()->{'app'}, 'app' => 1);
+				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->{'app'});
 			}
-			$apps->readApps();
+			$apps->readRessources();
 			while(my ($fileName, $input) = each %{$apps->app()}){
 				my $generator = Generator->new(
 					'cdb' => {
-						'path' => $input->{'path'} ? $input->{'path'} : $fixRessourcer->other()->{'cdbPath'},
+						'path' => $input->{'path'} ? $input->{'path'} : $fixRessourcer->{'cdbPath'},
 						'cdbName' => 'cards.cdb', 
 						'prevCdbName' => $fileName.'.cdb', 
-						'replacing' => $ressourcer->other()->{'pathToApkFolder'}.'/assets/cards.cdb',
+						'replacing' => $ressourcer->{'pathToApkFolder'}.'/assets/cards.cdb',
 						'opt' => $input->{'opt'},
 						'ai' => $input->{'ai'},
 					}, 
 					'apkFolder' => $input->{'apkFolder'}, 
 					'fileName' => $fileName,
-					'ressourcepath' => $fixRessourcer->other()->{'submodules'}, 
+					'ressourcepath' => $fixRessourcer->{'submodules'}, 
 				);
 				$generator->build();
 			}

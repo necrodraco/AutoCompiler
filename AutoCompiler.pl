@@ -125,12 +125,11 @@ EOF
 		if($all || $build){
 			my $apps; 
 			if(-e $fixRessourcer->{'apps'}){
-				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->{'apps'});
+				$apps = LoadFile($fixRessourcer->{'apps'});
 			}else{
-				$apps = Ressourcer->new( 'ressource' => $fixRessourcer->{'app'});
+				$apps = LoadFile($fixRessourcer->{'app'});
 			}
-			$apps->readRessources();
-			while(my ($fileName, $input) = each %{$apps->app()}){
+			while(my ($fileName, $input) = each %{$apps}){
 				my $generator = Generator->new(
 					'cdb' => {
 						'path' => $input->{'path'} ? $input->{'path'} : $fixRessourcer->{'cdbPath'},

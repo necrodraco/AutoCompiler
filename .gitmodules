@@ -4,3 +4,6 @@
 [submodule "submodules/live/LiveanimeLinks"]
 	path = submodules/live/LiveanimeLinks
 	url = https://github.com/Ygoproco/LiveanimeLinks
+[submodule "cardImageFinder"]
+	path = cardImageFinder
+	url = https://github.com/necrodraco/cardImageFinder.git

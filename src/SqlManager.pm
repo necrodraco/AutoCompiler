@@ -34,7 +34,7 @@ package SqlManager{
 			$self->doSqlCommand(
 				'
 					DELETE FROM datas 
-					WHERE type = 67108897
+					WHERE type in(67108897,67108865) 
 				'
 			);
 		}

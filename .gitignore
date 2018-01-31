@@ -1,4 +1,4 @@
-settings.properties
+settings.yaml
 custom_ai
 ygopro*
 img/*
@@ -12,7 +12,7 @@ pics/*
 pics_normal*
 ygopro/*
 cdbFiles/*
-apps.properties
+apps.yaml
 1 
 
 !img/empty.txt
